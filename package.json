@@ -20,5 +20,8 @@
     "url": "https://github.com/bernardoblasquez/gulp-dev/issues"
   },
   "homepage": "https://github.com/bernardoblasquez/gulp-dev#readme",
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  }
 }
