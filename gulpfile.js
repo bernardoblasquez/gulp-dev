@@ -22,6 +22,7 @@
 
 var gulp = require('gulp'),
     sassCompiler = require('gulp-sass'),
+    sourcemaps = require('gulp-sourcemaps'),
     browserSync = require('browser-sync').create();
 
 var paths = {
@@ -51,14 +52,16 @@ function compileSassToCss(){
   // recarrgar a páginas mantendo o foco no local da que etá sendo estilizado.
 
   return gulp.src(paths.sass.src)
-    .pipe(sassCompiler())
+    .pipe(sourcemaps.init())
+      .pipe(sassCompiler())
+    .pipe(sourcemaps.write())
     .pipe(gulp.dest(paths.css.dest))
     .pipe(browserSync.stream())
 }
 
 function watch(){
   // 1. Iniciar o brownserSync
-
+ 
   browserSync.init({
         server: {
             baseDir: paths.baseDirServer
