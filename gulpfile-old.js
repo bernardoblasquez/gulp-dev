@@ -7,23 +7,32 @@
 */
 
 var gulp = require('gulp'),
-    gulpSass = require('gulp-sass'),
+    sassCompiler = require('gulp-sass'),
     browserSync = require('browser-sync').create();
 
 var paths = {
 
   baseDirServer:'./app',
-  project:'app/**/*',
-  js:'app/js/**/*.js',
+  project:'./app/**/*',
+  html: './app/**/*.html',
+  js:'./app/js/**/*.js',
 
-  styles: {
-    src: 'app/css/**/*.css',
-    dest: 'assets/css/'
+  sass:{
+    src: './app/scss/**/*.scss'
   },
-
-
+  css: {
+    src: './app/css/**/*.css',
+    dest: './app/css/'
+  }
 
 };
+
+gulp.task('compileSassToCSS', function(){
+    gulp.src(paths.sass.src)
+    .pipe(sassCompiler())
+    .pipe(gulp.dest(paths.css.dest))
+    .pipe(browserSync.stream())
+})
 
 // Static server
 gulp.task('server', function() {
@@ -34,5 +43,18 @@ gulp.task('server', function() {
         }
     });
 
-    gulp.watch(paths.project).on('change', browserSync.reload);
+    gulp.watch(paths.sass.src).on('change', function(event){
+      
+      console.log(event); 
+      // a variável event mostra o caminho e o arquivo que está sendo manipulado
+
+      gulp.src(paths.sass.src)
+      .pipe(sassCompiler())
+      .pipe(gulp.dest(paths.css.dest))
+      .pipe(browserSync.stream())
+      
+    });
+
+    gulp.watch(paths.html).on('change', browserSync.reload);
+    gulp.watch(paths.js).on('change', browserSync.reload);
 });
