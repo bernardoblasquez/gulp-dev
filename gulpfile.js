@@ -15,14 +15,28 @@
     nomeDaPasta/\**\/*.scss
     - qualquer arquivo scss dento de nomeDaPasta
 
+    Sourcemaps
+    - permite que ao inspecionar um elemento através do navegador
+    este referencie arquivo sass ao invés do css, facilitando encontrar bugs
+    e indicando onde está o respectivo estilo no sass
+    - estrutura veja figura na pasta images
+    - https://www.npmjs.com/package/gulp-sourcemaps
+
     Referencias:
     - https://www.youtube.com/watch?v=QgMQeLymAdU
+    - https://www.npmjs.com/package/gulp-sass
+    - https://www.npmjs.com/package/gulp-sourcemaps
+    - https://browsersync.io/docs/gulp
+    - https://www.npmjs.com/package/gulp-autoprefixer
+    - 
+
 
 */
 
 var gulp = require('gulp'),
     sassCompiler = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps'),
+    autoprefixer = require('gulp-autoprefixer'),
     browserSync = require('browser-sync').create();
 
 var paths = {
@@ -50,13 +64,20 @@ function compileSassToCss(){
   // 4. perpeuar alterações para todos os browsers. Apos configurar o browserSync
   // -  o uso do metodo browserSync.stream() permite atualização do CSS sem
   // recarrgar a páginas mantendo o foco no local da que etá sendo estilizado.
+  
+  // CONFIGURARÇÂO do Autoprefixer
+  // - package.json no final do arquivo: "browserslist"
+  // - https://github.com/browserslist/browserslist#queries
+  // - https://github.com/postcss/autoprefixer#using-environment-variables-to-support-css-grid-prefixes-in-create-react-app
 
   return gulp.src(paths.sass.src)
     .pipe(sourcemaps.init())
-      .pipe(sassCompiler())
-    .pipe(sourcemaps.write())
+      .pipe(sassCompiler({outputStyle: 'expanded'})
+      .on('error', sassCompiler.logError))
+      .pipe(autoprefixer())
+    .pipe(sourcemaps.write('maps')) // cria e salva o arquivo de mapeamento, na pasta maps
     .pipe(gulp.dest(paths.css.dest))
-    .pipe(browserSync.stream())
+    .pipe(browserSync.stream()) // atualiza estilo sem recarregar página
 }
 
 function watch(){
