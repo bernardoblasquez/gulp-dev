@@ -15,12 +15,29 @@
     nomeDaPasta/\**\/*.scss
     - qualquer arquivo scss dento de nomeDaPasta
 
+
     Sourcemaps
     - permite que ao inspecionar um elemento através do navegador
     este referencie arquivo sass ao invés do css, facilitando encontrar bugs
     e indicando onde está o respectivo estilo no sass
     - estrutura veja figura na pasta images
     - https://www.npmjs.com/package/gulp-sourcemaps
+
+
+    Sass Lint
+    - Task responsável por analizar o arquivo sass e 
+    fornecer dicas de boas práticas;
+    - Deve ser usado antes de rodar o compilador sass e estas duas 
+    tasks estiverem na mesma função. Se ela rodar depois do compilador SASS 
+    esta task irá analizar o CSS resultante da compilação.
+
+    CSS Lint
+    - Caso a o desenvolvedor ainda não esteja usando o Sass
+    ele pode utilizar o CSS lint para aprender boas práticas com o CSS
+    - Os feedbacks providos pelo Css-lint aparentemente são melhores que 
+    a do sassLint (procure tirar as propriedades de ordem alfabética no sass
+    e compare as duas saídas para ver qual é mais clara)
+
 
     Referencias:
     - https://www.youtube.com/watch?v=QgMQeLymAdU
@@ -38,6 +55,9 @@ var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
     browserSync = require('browser-sync').create();
+    
+var sassLint = require('gulp-sass-lint'),
+    cssLint = require('gulp-csslint');
 
 var paths = {
 
@@ -71,6 +91,9 @@ function compileSassToCss(){
   // - https://github.com/postcss/autoprefixer#using-environment-variables-to-support-css-grid-prefixes-in-create-react-app
 
   return gulp.src(paths.sass.src)
+    .pipe(sassLint())
+    .pipe(sassLint.format())
+    .pipe(sassLint.failOnError())
     .pipe(sourcemaps.init())
       .pipe(sassCompiler({outputStyle: 'expanded'})
       .on('error', sassCompiler.logError))
@@ -79,6 +102,15 @@ function compileSassToCss(){
     .pipe(gulp.dest(paths.css.dest))
     .pipe(browserSync.stream()) // atualiza estilo sem recarregar página
 }
+
+
+function lintCSS(){ 
+  return gulp.src(paths.css.src)
+    .pipe(cssLint())
+    .pipe(cssLint.formatter())
+    .pipe(browserSync.stream()) 
+}
+
 
 function watch(){
   // 1. Iniciar o brownserSync
@@ -90,11 +122,13 @@ function watch(){
    });
 
    gulp.watch(paths.sass.src, compileSassToCss);
+   gulp.watch(paths.css.src).on('change', lintCSS);
    gulp.watch(paths.html).on('change', browserSync.reload);
    gulp.watch(paths.js).on('change', browserSync.reload);
 
 }
 
-// possibilita chamar esta task via linha de comando
+// possibilita chamar uma task via linha de comando
 exports.compileScssToCss = compileSassToCss;
 exports.watch = watch;
+exports.lintCSS = lintCSS;
