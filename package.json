@@ -23,7 +23,7 @@
   "homepage": "https://github.com/bernardoblasquez/gulp-dev#readme",
   "dependencies": {},
   "devDependencies": {
-    "browser-sync": "^2.26.7",
+    "browser-sync": "^2.27.5",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
     "gulp-csslint": "^1.0.1",
