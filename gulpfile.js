@@ -54,6 +54,7 @@ var gulp = require('gulp'),
     sassCompiler = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
+    inlineCss = require('gulp-inline-css');
     browserSync = require('browser-sync').create();
     
 var sassLint = require('gulp-sass-lint'),
@@ -61,54 +62,54 @@ var sassLint = require('gulp-sass-lint'),
 
 var paths = {
 
-  baseDirServer:'./app',
-  project:'./app/**/*',
-  html: './app/**/*.html',
-  js:'./app/js/**/*.js',
+   baseDirServer:'./app',
+   project:'./app/**/*',
+   html: './app/**/*.html',
+   js:'./app/js/**/*.js',
 
-  sass:{
-    src: './app/scss/**/*.scss'
-  },
-  css: {
-    src: './app/css/**/*.css',
-    dest: './app/css/'
-  }
+   sass:{
+      src: './app/scss/**/*.scss'
+   },
+   css: {
+      src: './app/css/**/*.css',
+      dest: './app/css/'
+   }
 
 };
 
 
 function compileSassToCss(){
-  // 1. onde está o arquivo Scss
-  // 2. Passar o arquivo SASS pelo compilador
-  // 3. Onde salvar o css compilado
-  // 4. perpeuar alterações para todos os browsers. Apos configurar o browserSync
-  // -  o uso do metodo browserSync.stream() permite atualização do CSS sem
-  // recarrgar a páginas mantendo o foco no local da que etá sendo estilizado.
-  
-  // CONFIGURARÇÂO do Autoprefixer
-  // - package.json no final do arquivo: "browserslist"
-  // - https://github.com/browserslist/browserslist#queries
-  // - https://github.com/postcss/autoprefixer#using-environment-variables-to-support-css-grid-prefixes-in-create-react-app
+// 1. onde está o arquivo Scss
+// 2. Passar o arquivo SASS pelo compilador
+// 3. Onde salvar o css compilado
+// 4. perpeuar alterações para todos os browsers. Apos configurar o browserSync
+// -  o uso do metodo browserSync.stream() permite atualização do CSS sem
+// recarrgar a páginas mantendo o foco no local da que etá sendo estilizado.
 
-  return gulp.src(paths.sass.src)
-    .pipe(sassLint())
-    .pipe(sassLint.format())
-    .pipe(sassLint.failOnError())
-    .pipe(sourcemaps.init())
+// CONFIGURARÇÂO do Autoprefixer
+// - package.json no final do arquivo: "browserslist"
+// - https://github.com/browserslist/browserslist#queries
+// - https://github.com/postcss/autoprefixer#using-environment-variables-to-support-css-grid-prefixes-in-create-react-app
+
+return gulp.src(paths.sass.src)
+   .pipe(sassLint())
+   .pipe(sassLint.format())
+   .pipe(sassLint.failOnError())
+   .pipe(sourcemaps.init())
       .pipe(sassCompiler({outputStyle: 'expanded'})
       .on('error', sassCompiler.logError))
       .pipe(autoprefixer())
-    .pipe(sourcemaps.write('maps')) // cria e salva o arquivo de mapeamento, na pasta maps
-    .pipe(gulp.dest(paths.css.dest))
-    .pipe(browserSync.stream()) // atualiza estilo sem recarregar página
+   .pipe(sourcemaps.write('maps')) // cria e salva o arquivo de mapeamento, na pasta maps
+   .pipe(gulp.dest(paths.css.dest))
+   .pipe(browserSync.stream()) // atualiza estilo sem recarregar página
 }
 
 
 function lintCSS(){ 
-  return gulp.src(paths.css.src)
-    .pipe(cssLint())
-    .pipe(cssLint.formatter())
-    .pipe(browserSync.stream()) 
+   return gulp.src(paths.css.src)
+      .pipe(cssLint())
+      .pipe(cssLint.formatter())
+      .pipe(browserSync.stream()) 
 }
 
 
@@ -116,9 +117,9 @@ function watch(){
   // 1. Iniciar o brownserSync
  
   browserSync.init({
-        server: {
-            baseDir: paths.baseDirServer
-        }
+      server: {
+         baseDir: paths.baseDirServer
+      }
    });
 
    gulp.watch(paths.sass.src, compileSassToCss);
@@ -128,7 +129,19 @@ function watch(){
 
 }
 
+function transformToInlineCSS() {
+   return gulp.src('./app/*.html')
+      .pipe(inlineCss({
+         applyStyleTags: true,
+         applyLinkTags: true,
+         removeStyleTags: true,
+         removeLinkTags: true
+   }))
+   .pipe(gulp.dest('build/'));
+}
+
 // possibilita chamar uma task via linha de comando
 exports.compileScssToCss = compileSassToCss;
 exports.watch = watch;
 exports.lintCSS = lintCSS;
+exports.transformToInlineCSS = transformToInlineCSS;
