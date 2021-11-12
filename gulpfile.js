@@ -51,14 +51,12 @@
 */
 
 var gulp = require('gulp'),
-    sassCompiler = require('gulp-sass'),
+    sassCompiler = require('gulp-sass')(require('sass')),
     sourcemaps = require('gulp-sourcemaps'),
     autoprefixer = require('gulp-autoprefixer'),
     inlineCss = require('gulp-inline-css');
     browserSync = require('browser-sync').create();
     
-var sassLint = require('gulp-sass-lint'),
-    cssLint = require('gulp-csslint');
 
 var paths = {
 
@@ -92,9 +90,6 @@ function compileSassToCss(){
 // - https://github.com/postcss/autoprefixer#using-environment-variables-to-support-css-grid-prefixes-in-create-react-app
 
 return gulp.src(paths.sass.src)
-   .pipe(sassLint())
-   .pipe(sassLint.format())
-   .pipe(sassLint.failOnError())
    .pipe(sourcemaps.init())
       .pipe(sassCompiler({outputStyle: 'expanded'})
       .on('error', sassCompiler.logError))
@@ -105,10 +100,8 @@ return gulp.src(paths.sass.src)
 }
 
 
-function lintCSS(){ 
+function CSS(){ 
    return gulp.src(paths.css.src)
-      .pipe(cssLint())
-      .pipe(cssLint.formatter())
       .pipe(browserSync.stream()) 
 }
 
@@ -123,7 +116,7 @@ function watch(){
    });
 
    gulp.watch(paths.sass.src, compileSassToCss);
-   gulp.watch(paths.css.src).on('change', lintCSS);
+   gulp.watch(paths.css.src).on('change', CSS);
    gulp.watch(paths.html).on('change', browserSync.reload);
    gulp.watch(paths.js).on('change', browserSync.reload);
 
@@ -143,5 +136,4 @@ function transformToInlineCSS() {
 // possibilita chamar uma task via linha de comando
 exports.compileScssToCss = compileSassToCss;
 exports.watch = watch;
-exports.lintCSS = lintCSS;
 exports.transformToInlineCSS = transformToInlineCSS;
