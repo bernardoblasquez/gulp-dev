@@ -26,11 +26,10 @@
     "browser-sync": "^2.27.5",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
-    "gulp-csslint": "^1.0.1",
     "gulp-inline-css": "^4.0.0",
-    "gulp-sass": "^4.0.2",
-    "gulp-sass-lint": "^1.4.0",
-    "gulp-sourcemaps": "^2.6.5"
+    "gulp-sass": "^5.0.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "sass": "^1.43.4"
   },
   "browserslist": [
     ">= 5%",
